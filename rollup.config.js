@@ -29,13 +29,15 @@ export default [
     plugins: [json(), babel(babelOptions), flowEntry()]
   },
 
-  // React Native build:
+  // React Native io stub:
   {
     external,
-    input: './src/platform/react-native/index.js',
-    output: [
-      { file: packageJson['react-native'], format: 'cjs', sourcemap: true }
-    ],
+    input: './src/platform/react-native/io.js',
+    output: {
+      file: './lib/react-native/io.js',
+      format: 'cjs',
+      sourcemap: true
+    },
     plugins: [json(), babel(babelOptions), flowEntry()]
   }
 ]

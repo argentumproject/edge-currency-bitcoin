@@ -25,7 +25,7 @@
   ],
   "main": "./lib/node/index.js",
   "scripts": {
-    "build": "rimraf lib && rollup -c ",
+    "build": "rimraf lib && rollup -c && webpack",
     "build:test": "rollup -c test/rollup.config.js",
     "precommit": "lint-staged && flow && npm test && npm run build",
     "flow": "flow",
@@ -49,6 +49,7 @@
     "coinselect": "^3.1.11",
     "eventemitter3": "^3.1.0",
     "jsonschema": "^1.2.4",
+    "source-map-loader": "^0.2.4",
     "stable": "^0.1.8",
     "unorm": "^1.4.1",
     "uri-js": "^4.2.2",
@@ -59,8 +60,11 @@
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-object-rest-spread": "7.2.0",
     "@babel/plugin-transform-flow-strip-types": "7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.2.3",
     "@babel/preset-flow": "^7.0.0",
     "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
     "edge-core-js": "^0.13.0",
     "disklet": "^0.3.0",
     "eslint": "^5.6.1",
@@ -93,7 +97,26 @@
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-multi-entry": "^2.0.2",
     "source-map-support": "^0.5.9",
-    "updot": "^1.1.7"
+    "updot": "^1.1.7",
+    "webpack": "^4.28.1",
+    "webpack-cli": "^3.2.1",
+    "yaob": "^0.3.2"
+  },
+  "peerDependencies": {
+    "react-native-fast-crypto": "^1.6.0",
+    "react-native-tcp": "git://github.com/Airbitz/react-native-tcp.git"
+  },
+  "edge": {
+    "node": {
+      "corePlugin": "./lib/node/index.js"
+    },
+    "react-native": {
+      "assets": [
+        "./lib/react-native/bitcoin-plugin.js"
+      ],
+      "corePlugin": "bitcoin-plugin.js",
+      "io": "./lib/react-native/io.js"
+    }
   },
   "husky": {
     "hooks": {

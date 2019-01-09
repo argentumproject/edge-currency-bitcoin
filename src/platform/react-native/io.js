@@ -15,7 +15,7 @@ import {
   makeEdgeSocket
 } from '../customIo.js'
 
-export function makeCustomIo (): CustomIo {
+export default function makeCustomIo (): CustomIo {
   bridgifyObject(pbkdf2)
   bridgifyObject(secp256k1)
 
