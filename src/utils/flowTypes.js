@@ -1,7 +1,4 @@
-/**
- * Created by Paul Puey 2017/11/09.
- * @flow
- */
+// @flow
 
 // import type { EdgeTransaction } from 'edge-core-js'
 // import { txLibInfo } from './currencyInfoETH.js'

@@ -1,12 +1,9 @@
-/**
- * Created by Paul Puey on 2017/11/09
- * @flow
- */
+// @flow
 
 import { assert } from 'chai'
 import { describe, it } from 'mocha'
 
-import type { AddressInfos, AddressInfo } from '../../src/engine/engineState.js'
+import type { AddressInfo, AddressInfos } from '../../src/engine/engineState.js'
 // import type { HeaderCache } from '../src/pluginState'
 import { pickUtxos } from '../../src/engine/pickUtxos.js'
 

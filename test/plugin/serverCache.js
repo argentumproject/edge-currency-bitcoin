@@ -1,7 +1,4 @@
-/**
- * Created by Paul Puey on 2017/11/09
- * @flow
- */
+// @flow
 
 import { assert } from 'chai'
 import { describe, it } from 'mocha'

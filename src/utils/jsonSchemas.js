@@ -1,7 +1,4 @@
-/**
- * Created by Paul Puey 2017/11/09.
- * @flow
- */
+// @flow
 
 export const InfoServerFeesSchema = {
   type: 'object',
