@@ -17,7 +17,7 @@ import { before, describe, it } from 'mocha'
 import fetch from 'node-fetch'
 import request from 'request'
 
-import * as Factories from '../../../src/index.js'
+import { edgeCorePlugins } from '../../../src/index.js'
 
 const DATA_STORE_FOLDER = 'txEngineFolderBTC'
 const ROOT_FOLDER = join(__dirname, '../')
@@ -47,7 +47,7 @@ for (const dir of dirs(FIXTURES_FOLDER)) {
   )
 
   const currencyPluginFactory: EdgeCurrencyPluginFactory =
-    Factories[fixture['factory']]
+    edgeCorePlugins[fixture['pluginName']]
   const WALLET_FORMAT = fixture['WALLET_FORMAT']
   const WALLET_TYPE = fixture['WALLET_TYPE']
   const TX_AMOUNT = fixture['TX_AMOUNT']

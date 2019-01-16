@@ -9,6 +9,7 @@ import type {
   EdgeCurrencyEngineOptions,
   EdgeCurrencyInfo,
   EdgeCurrencyPlugin,
+  EdgeCurrencyPluginFactory,
   EdgeEncodeUri,
   EdgeIo,
   EdgeParsedUri,
@@ -19,6 +20,7 @@ import {
   CurrencyEngine,
   type EngineCurrencyInfo
 } from '../engine/currencyEngine.js'
+import { allInfo } from '../info/all.js'
 import {
   type BcoinCurrencyInfo,
   addNetwork,
@@ -32,6 +34,8 @@ import {
 import { getXPubFromSeed } from '../utils/formatSelector.js'
 import { PluginState } from './pluginState.js'
 import { encodeUri, parseUri } from './uri.js'
+
+type PluginTable = { [pluginName: string]: EdgeCurrencyPluginFactory }
 
 export type CurrencyPluginFactorySettings = {
   currencyInfo: EdgeCurrencyInfo,
@@ -142,7 +146,7 @@ export class CurrencyPlugin {
   }
 }
 
-export const makeCurrencyPluginFactory = ({
+const makeCurrencyPluginFactory = ({
   currencyInfo,
   engineInfo,
   bcoinInfo
@@ -165,4 +169,13 @@ export const makeCurrencyPluginFactory = ({
       return plugin.state.load().then(() => plugin)
     }
   }
+}
+
+export function makeEdgeCorePlugins (): PluginTable {
+  const out: PluginTable = {}
+  for (const info of allInfo) {
+    const pluginName = info.currencyInfo.pluginName
+    out[pluginName] = makeCurrencyPluginFactory(info)
+  }
+  return out
 }

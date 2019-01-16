@@ -4,12 +4,12 @@ import { assert } from 'chai'
 import { type EdgeCurrencyPluginFactory, makeFakeIos } from 'edge-core-js'
 import { before, describe, it } from 'mocha'
 
-import * as Factories from '../../../src/index.js'
+import { edgeCorePlugins } from '../../../src/index.js'
 import fixtures from './fixtures.json'
 
 for (const fixture of fixtures) {
   const currencyPluginFactory: EdgeCurrencyPluginFactory =
-    Factories[fixture['factory']]
+    edgeCorePlugins[fixture['pluginName']]
   const WALLET_TYPE = fixture['WALLET_TYPE']
   const WALLET_FORMAT = fixture['WALLET_FORMAT']
   const keyName = WALLET_TYPE.split('wallet:')[1].split('-')[0] + 'Key'
