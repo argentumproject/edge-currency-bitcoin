@@ -23,8 +23,7 @@
     "README.md",
     "src/*"
   ],
-  "main": "./lib/index.js",
-  "module": "./lib/index.es.js",
+  "main": "./lib/node/index.js",
   "scripts": {
     "build": "rimraf lib && rollup -c ",
     "build:test": "rollup -c test/rollup.config.js",
@@ -112,5 +111,6 @@
       "import-sort --list-different",
       "prettier-eslint --list-different"
     ]
-  }
+  },
+  "react-native": "./lib/react-native/index.js"
 }

@@ -4,7 +4,7 @@ import { assert } from 'chai'
 import { type EdgeCurrencyPluginFactory, makeFakeIos } from 'edge-core-js'
 import { before, describe, it } from 'mocha'
 
-import { edgeCorePlugins } from '../../../src/index.js'
+import { edgeCorePlugins } from '../../../src/platform/node/index.js'
 import fixtures from './fixtures.json'
 
 for (const fixture of fixtures) {

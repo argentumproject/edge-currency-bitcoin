@@ -10,20 +10,32 @@ const babelOptions = {
   plugins: ['@babel/plugin-proposal-object-rest-spread']
 }
 
-export default {
-  external: [
-    ...Object.keys(packageJson.dependencies),
-    ...Object.keys(packageJson.devDependencies),
-    'buffer',
-    'crypto',
-    'events',
-    'net',
-    'tls'
-  ],
-  input: './src/index.js',
-  output: [
-    { file: packageJson.main, format: 'cjs', sourcemap: true },
-    { file: packageJson.module, format: 'es', sourcemap: true }
-  ],
-  plugins: [json(), babel(babelOptions), flowEntry()]
-}
+const external = [
+  ...Object.keys(packageJson.dependencies),
+  ...Object.keys(packageJson.devDependencies),
+  'buffer',
+  'crypto',
+  'events',
+  'net',
+  'tls'
+]
+
+export default [
+  // Node build:
+  {
+    external,
+    input: './src/platform/node/index.js',
+    output: { file: packageJson.main, format: 'cjs', sourcemap: true },
+    plugins: [json(), babel(babelOptions), flowEntry()]
+  },
+
+  // React Native build:
+  {
+    external,
+    input: './src/platform/react-native/index.js',
+    output: [
+      { file: packageJson['react-native'], format: 'cjs', sourcemap: true }
+    ],
+    plugins: [json(), babel(babelOptions), flowEntry()]
+  }
+]

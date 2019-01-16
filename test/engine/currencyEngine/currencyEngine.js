@@ -17,7 +17,7 @@ import { before, describe, it } from 'mocha'
 import fetch from 'node-fetch'
 import request from 'request'
 
-import { edgeCorePlugins } from '../../../src/index.js'
+import { edgeCorePlugins } from '../../../src/platform/node/index.js'
 
 const DATA_STORE_FOLDER = 'txEngineFolderBTC'
 const ROOT_FOLDER = join(__dirname, '../')
