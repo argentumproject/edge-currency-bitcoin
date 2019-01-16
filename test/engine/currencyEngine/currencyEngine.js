@@ -4,7 +4,6 @@ import EventEmitter from 'events'
 import { readdirSync, statSync } from 'fs'
 import { join } from 'path'
 
-import bcoin from 'bcoin'
 import { assert } from 'chai'
 import { downgradeDisklet, navigateDisklet } from 'disklet'
 import {
@@ -58,11 +57,7 @@ for (const dir of dirs(FIXTURES_FOLDER)) {
   const pluginOpts = {
     io: {
       ...fakeIo,
-      secp256k1: bcoin.crypto.secp256k1,
-      pbkdf2: bcoin.crypto.pbkdf2,
       random: size => fixture['key'],
-      Socket: require('net').Socket,
-      TLSSocket: require('tls').TLSSocket,
       fetch: fetch
     }
   }

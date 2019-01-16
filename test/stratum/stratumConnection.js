@@ -1,12 +1,10 @@
 // @flow
 
-import net from 'net'
-import tls from 'tls'
-
 import { assert, expect } from 'chai'
 import { makeFakeIos } from 'edge-core-js'
 import { describe, it } from 'mocha'
 
+import { makeCustomIo } from '../../src/platform/node/io.js'
 import {
   type StratumCallbacks,
   StratumConnection
@@ -28,8 +26,7 @@ const ELECTRUM_SERVER = 'electrum://electrum.qtornado.com:50001'
 const [fakeIo] = makeFakeIos(1)
 const io = {
   ...fakeIo,
-  Socket: net.Socket,
-  TLSSocket: tls.TLSSocket
+  ...makeCustomIo()
 }
 
 describe('StratumConnection', function () {

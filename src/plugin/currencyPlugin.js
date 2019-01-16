@@ -21,6 +21,7 @@ import {
   type EngineCurrencyInfo
 } from '../engine/currencyEngine.js'
 import { allInfo } from '../info/all.js'
+import { type CustomIo } from '../platform/customIo.js'
 import {
   type BcoinCurrencyInfo,
   addNetwork,
@@ -58,14 +59,14 @@ export class CurrencyPlugin {
   engineInfo: EngineCurrencyInfo
   network: string
   pluginName: string
-  io: EdgeIo
+  io: EdgeIo & CustomIo
   state: PluginState
 
   // ------------------------------------------------------------------------
   // Private API
   // ------------------------------------------------------------------------
   constructor (
-    { io }: EdgeCorePluginOptions,
+    io: EdgeIo & CustomIo,
     { currencyInfo, engineInfo }: CurrencyPluginSettings
   ) {
     // Validate that we are a valid EdgeCurrencyPlugin:
@@ -146,11 +147,10 @@ export class CurrencyPlugin {
   }
 }
 
-const makeCurrencyPluginFactory = ({
-  currencyInfo,
-  engineInfo,
-  bcoinInfo
-}: CurrencyPluginFactorySettings) => {
+const makeCurrencyPluginFactory = (
+  { currencyInfo, engineInfo, bcoinInfo }: CurrencyPluginFactorySettings,
+  customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
+) => {
   addNetwork(bcoinInfo)
   return {
     pluginType: 'currency',
@@ -159,11 +159,13 @@ const makeCurrencyPluginFactory = ({
     makePlugin: async (
       options: EdgeCorePluginOptions
     ): Promise<EdgeCurrencyPlugin> => {
+      const io: CustomIo & EdgeIo = customizeIo(options.io)
+
       // Create a core plugin given the currencyInfo and plugin options
-      const plugin = new CurrencyPlugin(options, { currencyInfo, engineInfo })
+      const plugin = new CurrencyPlugin(io, { currencyInfo, engineInfo })
       // Extend bcoin to support this plugin currency info
       // and faster crypto if possible
-      const { io: { secp256k1, pbkdf2 } = {} } = options
+      const { secp256k1, pbkdf2 } = io
       patchCrypto(secp256k1, pbkdf2)
       // Return the plugin after it finished loading from cache
       return plugin.state.load().then(() => plugin)
@@ -171,11 +173,13 @@ const makeCurrencyPluginFactory = ({
   }
 }
 
-export function makeEdgeCorePlugins (): PluginTable {
+export function makeEdgeCorePlugins (
+  customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
+): PluginTable {
   const out: PluginTable = {}
   for (const info of allInfo) {
     const pluginName = info.currencyInfo.pluginName
-    out[pluginName] = makeCurrencyPluginFactory(info)
+    out[pluginName] = makeCurrencyPluginFactory(info, customizeIo)
   }
   return out
 }

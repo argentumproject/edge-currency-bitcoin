@@ -20,9 +20,7 @@ for (const fixture of fixtures) {
   const opts = {
     io: {
       ...fakeIo,
-      random: size => fixture['key'],
-      Socket: require('net').Socket,
-      TLSSocket: require('tls').TLSSocket
+      random: size => fixture['key']
     }
   }
 

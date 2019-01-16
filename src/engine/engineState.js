@@ -6,6 +6,7 @@ import EventEmitter from 'eventemitter3'
 import stable from 'stable'
 import { parse } from 'uri-js'
 
+import { type CustomIo } from '../platform/customIo.js'
 import { type PluginState } from '../plugin/pluginState.js'
 // import { scoreServer2 } from '../plugin/pluginState.js'
 import type {
@@ -84,7 +85,7 @@ export interface EngineStateCallbacks {
 export interface EngineStateOptions {
   files: { txs: string, addresses: string };
   callbacks: EngineStateCallbacks;
-  io: EdgeIo;
+  io: EdgeIo & CustomIo;
   localFolder: DiskletFolder;
   encryptedLocalFolder: DiskletFolder;
   pluginState: PluginState;
@@ -387,7 +388,7 @@ export class EngineState extends EventEmitter {
   // ------------------------------------------------------------------------
   // Private stuff
   // ------------------------------------------------------------------------
-  io: EdgeIo
+  io: EdgeIo & CustomIo
   walletId: string
   txFile: string
   addressFile: string
@@ -512,7 +513,6 @@ export class EngineState extends EventEmitter {
     const ignorePatterns = []
     // if (!this.io.TLSSocket)
     ignorePatterns.push('electrums:')
-    if (!this.io.Socket) ignorePatterns.push('electrum:')
     if (this.serverList.length === 0) {
       this.serverList = this.pluginState.getServers(
         NEW_CONNECTIONS,
