@@ -353,9 +353,15 @@ export class CurrencyEngine {
     log += '------------------------------------------------------------------'
     console.log(`${this.prunedWalletId}: ${log}`)
   }
+
   // ------------------------------------------------------------------------
   // Public API
   // ------------------------------------------------------------------------
+
+  async changeUserSettings (userSettings: Object): Promise<mixed> {
+    await this.pluginState.updateServers(userSettings)
+  }
+
   async startEngine (): Promise<void> {
     this.callbacks.onBalanceChanged(this.currencyCode, this.getBalance())
     this.updateFeeTable()

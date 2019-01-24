@@ -4,12 +4,13 @@ import { Buffer } from 'buffer'
 
 import type {
   EdgeCorePluginOptions,
+  EdgeCorePlugins,
   EdgeCreatePrivateKeyOptions,
   EdgeCurrencyEngine,
   EdgeCurrencyEngineOptions,
   EdgeCurrencyInfo,
   EdgeCurrencyPlugin,
-  EdgeCurrencyPluginFactory,
+  EdgeCurrencyTools,
   EdgeEncodeUri,
   EdgeIo,
   EdgeParsedUri,
@@ -36,8 +37,6 @@ import { getXPubFromSeed } from '../utils/formatSelector.js'
 import { PluginState } from './pluginState.js'
 import { encodeUri, parseUri } from './uri.js'
 
-type PluginTable = { [pluginName: string]: EdgeCurrencyPluginFactory }
-
 export type CurrencyPluginFactorySettings = {
   currencyInfo: EdgeCurrencyInfo,
   engineInfo: EngineCurrencyInfo,
@@ -54,9 +53,8 @@ export type CurrencyPluginSettings = {
  * Provides information about the currency,
  * as well as generic (non-wallet) functionality.
  */
-export class CurrencyPlugin {
+export class CurrencyTools {
   currencyInfo: EdgeCurrencyInfo
-  engineInfo: EngineCurrencyInfo
   network: string
   pluginName: string
   io: EdgeIo & CustomIo
@@ -69,9 +67,9 @@ export class CurrencyPlugin {
     io: EdgeIo & CustomIo,
     { currencyInfo, engineInfo }: CurrencyPluginSettings
   ) {
-    // Validate that we are a valid EdgeCurrencyPlugin:
+    // Validate that we are a valid EdgeCurrencyTools:
     // eslint-disable-next-line no-unused-vars
-    const test: EdgeCurrencyPlugin = this
+    const test: EdgeCurrencyTools = this
 
     // Public API:
     this.currencyInfo = currencyInfo
@@ -79,7 +77,6 @@ export class CurrencyPlugin {
     console.log(`Creating Currency Plugin for ${this.pluginName}`)
     // Private API:
     this.io = io
-    this.engineInfo = engineInfo
     this.network = engineInfo.network
     const { defaultSettings, pluginName, currencyCode } = this.currencyInfo
     this.state = new PluginState({
@@ -93,7 +90,10 @@ export class CurrencyPlugin {
   // ------------------------------------------------------------------------
   // Public API
   // ------------------------------------------------------------------------
-  createPrivateKey (walletType: string, opts?: EdgeCreatePrivateKeyOptions) {
+  async createPrivateKey (
+    walletType: string,
+    opts?: EdgeCreatePrivateKeyOptions
+  ) {
     const randomBuffer = Buffer.from(this.io.random(32))
     return keysFromEntropy(randomBuffer, this.network, opts)
   }
@@ -111,27 +111,12 @@ export class CurrencyPlugin {
     return { ...walletInfo.keys, [`${network}Xpub`]: xpub }
   }
 
-  async makeEngine (
-    walletInfo: EdgeWalletInfo,
-    options: EdgeCurrencyEngineOptions
-  ): Promise<EdgeCurrencyEngine> {
-    const engine = new CurrencyEngine({
-      walletInfo,
-      engineInfo: this.engineInfo,
-      pluginState: this.state,
-      options,
-      io: this.io
-    })
-    await engine.load()
-    return engine
+  parseUri (uri: string): Promise<EdgeParsedUri> {
+    return Promise.resolve(parseUri(uri, this.network, this.currencyInfo))
   }
 
-  parseUri (uri: string): EdgeParsedUri {
-    return parseUri(uri, this.network, this.currencyInfo)
-  }
-
-  encodeUri (obj: EdgeEncodeUri): string {
-    return encodeUri(obj, this.network, this.currencyInfo)
+  encodeUri (obj: EdgeEncodeUri): Promise<string> {
+    return Promise.resolve(encodeUri(obj, this.network, this.currencyInfo))
   }
 
   getSplittableTypes (walletInfo: EdgeWalletInfo): Array<string> {
@@ -141,10 +126,6 @@ export class CurrencyPlugin {
       .filter(network => getFromatsForNetwork(network).includes(format))
       .map(network => `wallet:${network}`)
   }
-
-  async changeSettings (settings: Object): Promise<mixed> {
-    return this.state.updateServers(settings)
-  }
 }
 
 const makeCurrencyPluginFactory = (
@@ -152,31 +133,51 @@ const makeCurrencyPluginFactory = (
   customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
 ) => {
   addNetwork(bcoinInfo)
-  return {
-    pluginType: 'currency',
-    currencyInfo: currencyInfo,
-    pluginName: currencyInfo.pluginName,
-    makePlugin: async (
-      options: EdgeCorePluginOptions
-    ): Promise<EdgeCurrencyPlugin> => {
-      const io: CustomIo & EdgeIo = customizeIo(options.io)
 
-      // Create a core plugin given the currencyInfo and plugin options
-      const plugin = new CurrencyPlugin(io, { currencyInfo, engineInfo })
-      // Extend bcoin to support this plugin currency info
-      // and faster crypto if possible
-      const { secp256k1, pbkdf2 } = io
-      patchCrypto(secp256k1, pbkdf2)
-      // Return the plugin after it finished loading from cache
-      return plugin.state.load().then(() => plugin)
+  return function makePlugin (
+    options: EdgeCorePluginOptions
+  ): EdgeCurrencyPlugin {
+    const io: CustomIo & EdgeIo = customizeIo(options.io)
+
+    // Extend bcoin to support this plugin currency info
+    // and faster crypto if possible
+    const { secp256k1, pbkdf2 } = io
+    patchCrypto(secp256k1, pbkdf2)
+
+    let toolsPromise: Promise<EdgeCurrencyTools> | void
+    return {
+      currencyInfo,
+
+      async makeCurrencyEngine (
+        walletInfo: EdgeWalletInfo,
+        options: EdgeCurrencyEngineOptions
+      ): Promise<EdgeCurrencyEngine> {
+        const tools = await this.makeCurrencyTools()
+        const engine = new CurrencyEngine({
+          walletInfo,
+          engineInfo,
+          pluginState: tools.state,
+          options,
+          io
+        })
+        await engine.load()
+        return engine
+      },
+
+      makeCurrencyTools (): Promise<EdgeCurrencyTools> {
+        if (toolsPromise != null) return toolsPromise
+        const tools = new CurrencyTools(io, { currencyInfo, engineInfo })
+        toolsPromise = tools.state.load().then(() => tools)
+        return toolsPromise
+      }
     }
   }
 }
 
 export function makeEdgeCorePlugins (
   customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
-): PluginTable {
-  const out: PluginTable = {}
+): EdgeCorePlugins {
+  const out: EdgeCorePlugins = {}
   for (const info of allInfo) {
     const pluginName = info.currencyInfo.pluginName
     out[pluginName] = makeCurrencyPluginFactory(info, customizeIo)

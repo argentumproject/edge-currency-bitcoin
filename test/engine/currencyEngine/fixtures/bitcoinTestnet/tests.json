@@ -17,7 +17,7 @@
   "Make Engine": {
     "network": "bitcointestnet",
     "id": "1",
-    "optionalSettings": {
+    "userSettings": {
       "enableOverrideServers": true,
       "electrumServers": [["electrum.hsmiths.com", "8080"]]
     }
