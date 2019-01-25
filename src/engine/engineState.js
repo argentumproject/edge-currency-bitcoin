@@ -84,9 +84,9 @@ export interface EngineStateCallbacks {
 export interface EngineStateOptions {
   files: { txs: string, addresses: string };
   callbacks: EngineStateCallbacks;
-  io: any;
-  localFolder: any;
-  encryptedLocalFolder: any;
+  io: EdgeIo;
+  localFolder: DiskletFolder;
+  encryptedLocalFolder: DiskletFolder;
   pluginState: PluginState;
   walletId?: string;
 }

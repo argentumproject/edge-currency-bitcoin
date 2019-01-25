@@ -1,7 +1,7 @@
 // @flow
 
 import { bns } from 'biggystring'
-import type { DiskletFolder } from 'disklet'
+import { type DiskletFolder, downgradeDisklet } from 'disklet'
 import type {
   EdgeCurrencyEngine,
   EdgeCurrencyEngineCallbacks,
@@ -126,8 +126,10 @@ export class CurrencyEngine {
     this.prunedWalletId = this.walletId.slice(0, 6)
     this.pluginState = pluginState
     this.callbacks = options.callbacks
-    this.walletLocalFolder = options.walletLocalFolder
-    this.walletLocalEncryptedFolder = options.walletLocalEncryptedFolder
+    this.walletLocalFolder = downgradeDisklet(options.walletLocalDisklet)
+    this.walletLocalEncryptedFolder = downgradeDisklet(
+      options.walletLocalEncryptedDisklet
+    )
     this.io = io
     this.engineInfo = engineInfo
     this.feeUpdateInterval = this.engineInfo.feeUpdateInterval
