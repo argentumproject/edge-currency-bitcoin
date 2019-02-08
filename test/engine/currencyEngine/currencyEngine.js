@@ -11,14 +11,14 @@ import {
   type EdgeCurrencyEngineOptions,
   type EdgeCurrencyPlugin,
   type EdgeCurrencyTools,
-  makeFakeIos
+  makeFakeIo
 } from 'edge-core-js'
 import { readFileSync } from 'jsonfile'
 import { before, describe, it } from 'mocha'
 import fetch from 'node-fetch'
 import request from 'request'
 
-import { edgeCorePlugins } from '../../../src/platform/node/index.js'
+import edgeCorePlugins from '../../../src/platform/node/index.js'
 
 const DATA_STORE_FOLDER = 'txEngineFolderBTC'
 const ROOT_FOLDER = join(__dirname, '../')
@@ -53,7 +53,7 @@ for (const dir of dirs(FIXTURES_FOLDER)) {
 
   let keys, engine
   const emitter = new EventEmitter()
-  const [fakeIo] = makeFakeIos(1)
+  const fakeIo = makeFakeIo()
   const pluginOpts = {
     io: {
       ...fakeIo,
@@ -61,6 +61,7 @@ for (const dir of dirs(FIXTURES_FOLDER)) {
       fetch: fetch
     },
     initOptions: {},
+    nativeIo: {},
     pluginDisklet: fakeIo.disklet
   }
   const factory = edgeCorePlugins[fixture['pluginName']]

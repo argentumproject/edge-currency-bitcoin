@@ -6,11 +6,11 @@ import {
   type EdgeCorePluginOptions,
   type EdgeCurrencyPlugin,
   type EdgeCurrencyTools,
-  makeFakeIos
+  makeFakeIo
 } from 'edge-core-js'
 import { before, describe, it } from 'mocha'
 
-import { edgeCorePlugins } from '../../../src/platform/node/index.js'
+import edgeCorePlugins from '../../../src/platform/node/index.js'
 import fixtures from './fixtures.json'
 
 for (const fixture of fixtures) {
@@ -20,13 +20,14 @@ for (const fixture of fixtures) {
   const xpubName = WALLET_TYPE.split('wallet:')[1].split('-')[0] + 'Xpub'
   let keys
 
-  const [fakeIo] = makeFakeIos(1)
+  const fakeIo = makeFakeIo()
   const pluginOpts: EdgeCorePluginOptions = {
     io: {
       ...fakeIo,
       random: size => fixture['key']
     },
     initOptions: {},
+    nativeIo: {},
     pluginDisklet: fakeIo.disklet
   }
   const factory = edgeCorePlugins[fixture['pluginName']]

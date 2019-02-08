@@ -32,9 +32,9 @@ export default [
   // React Native io stub:
   {
     external,
-    input: './src/platform/react-native/io.js',
+    input: './src/platform/react-native/react-native-io.js',
     output: {
-      file: './lib/react-native/io.js',
+      file: './lib/react-native-io.js',
       format: 'cjs',
       sourcemap: true
     },

@@ -1,9 +1,8 @@
 // @flow
 
 import { makeEdgeCorePlugins } from '../../plugin/currencyPlugin.js'
-import { makeCustomIo } from './io.js'
+import { makeNodeIo } from './node-io.js'
 
-export const edgeCorePlugins = makeEdgeCorePlugins(io => ({
-  ...io,
-  ...makeCustomIo()
-}))
+const edgeCorePlugins = makeEdgeCorePlugins(opts => makeNodeIo(opts.io))
+
+export default edgeCorePlugins

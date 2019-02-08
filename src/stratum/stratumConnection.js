@@ -1,9 +1,8 @@
 // @flow
 
-import type { EdgeIo } from 'edge-core-js'
 import { parse } from 'uri-js'
 
-import { type CustomIo, type EdgeSocket } from '../platform/customIo.js'
+import { type EdgeSocket, type PluginIo } from '../platform/pluginIo.js'
 import { fetchPing, fetchVersion } from './stratumMessages.js'
 import type { StratumBlockHeader } from './stratumMessages.js'
 
@@ -36,7 +35,7 @@ export interface StratumCallbacks {
 
 export interface StratumOptions {
   callbacks: StratumCallbacks;
-  io: EdgeIo & CustomIo;
+  io: PluginIo;
   queueSize?: number; // defaults to 10
   timeout?: number; // seconds, defaults to 30
   walletId?: string; // for logging purposes
@@ -103,7 +102,7 @@ export class StratumConnection {
     }
 
     // Connect to the server:
-    const io: CustomIo = this.io
+    const io: PluginIo = this.io
     return io
       .makeSocket({
         host: parsed.host,
@@ -176,7 +175,7 @@ export class StratumConnection {
   // ------------------------------------------------------------------------
 
   // Options:
-  io: EdgeIo & CustomIo
+  io: PluginIo
   queueSize: number
   timeout: number // Converted to ms
   callbacks: StratumCallbacks

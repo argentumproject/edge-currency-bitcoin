@@ -1,17 +1,17 @@
 // @flow
 
+import type { EdgeCorePluginOptions } from 'edge-core-js'
+
 import { makeEdgeCorePlugins } from '../../plugin/currencyPlugin.js'
 
 window.addEdgeCorePlugins(
-  makeEdgeCorePlugins(io => {
-    const flowHack: any = io
-    if (
-      flowHack.makeSocket == null ||
-      flowHack.pbkdf2 == null ||
-      flowHack.secp256k1 == null
-    ) {
+  makeEdgeCorePlugins((opts: EdgeCorePluginOptions) => {
+    const nativeIo = opts.nativeIo['edge-currency-bitcoin']
+    if (nativeIo == null) {
       throw new Error('React Native Bitcoin IO object not loaded')
     }
-    return flowHack
+
+    const { pbkdf2, secp256k1, makeSocket } = nativeIo
+    return { ...opts.io, pbkdf2, secp256k1, makeSocket }
   })
 )

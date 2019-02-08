@@ -1,5 +1,6 @@
 // @flow
 
+import type { EdgeIo } from 'edge-core-js'
 import { type Subscriber, bridgifyObject, emit, onMethod } from 'yaob'
 
 export type EdgeSecp256k1 = {
@@ -96,10 +97,15 @@ export function makeEdgeSocket (
 }
 
 /**
- * The extra IO this plugin expects.
+ * The extra things we need to add to the EdgeIo object.
  */
-export type CustomIo = {
+export type ExtraIo = {
   +secp256k1?: EdgeSecp256k1,
   +pbkdf2?: EdgePbkdf2,
   makeSocket(opts: EdgeSocketOptions): Promise<EdgeSocket>
 }
+
+/**
+ * The IO object this plugin uses internally.
+ */
+export type PluginIo = EdgeIo & ExtraIo

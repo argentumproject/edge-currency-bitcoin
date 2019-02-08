@@ -1,12 +1,11 @@
 // @flow
 
 import type { DiskletFolder } from 'disklet'
-import type { EdgeIo } from 'edge-core-js'
 import EventEmitter from 'eventemitter3'
 import stable from 'stable'
 import { parse } from 'uri-js'
 
-import { type CustomIo } from '../platform/customIo.js'
+import { type PluginIo } from '../platform/pluginIo.js'
 import { type PluginState } from '../plugin/pluginState.js'
 // import { scoreServer2 } from '../plugin/pluginState.js'
 import type {
@@ -85,7 +84,7 @@ export interface EngineStateCallbacks {
 export interface EngineStateOptions {
   files: { txs: string, addresses: string };
   callbacks: EngineStateCallbacks;
-  io: EdgeIo & CustomIo;
+  io: PluginIo;
   localFolder: DiskletFolder;
   encryptedLocalFolder: DiskletFolder;
   pluginState: PluginState;
@@ -388,7 +387,7 @@ export class EngineState extends EventEmitter {
   // ------------------------------------------------------------------------
   // Private stuff
   // ------------------------------------------------------------------------
-  io: EdgeIo & CustomIo
+  io: PluginIo
   walletId: string
   txFile: string
   addressFile: string

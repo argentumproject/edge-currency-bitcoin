@@ -9,13 +9,13 @@ import { Socket } from 'react-native-tcp'
 import { bridgifyObject } from 'yaob'
 
 import {
-  type CustomIo,
   type EdgeSocket,
   type EdgeSocketOptions,
+  type ExtraIo,
   makeEdgeSocket
-} from '../customIo.js'
+} from '../pluginIo.js'
 
-export default function makeCustomIo (): CustomIo {
+export default function makeCustomIo (): ExtraIo {
   bridgifyObject(pbkdf2)
   bridgifyObject(secp256k1)
 

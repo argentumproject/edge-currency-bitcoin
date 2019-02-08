@@ -12,7 +12,6 @@ import type {
   EdgeCurrencyPlugin,
   EdgeCurrencyTools,
   EdgeEncodeUri,
-  EdgeIo,
   EdgeParsedUri,
   EdgeWalletInfo
 } from 'edge-core-js'
@@ -22,7 +21,7 @@ import {
   type EngineCurrencyInfo
 } from '../engine/currencyEngine.js'
 import { allInfo } from '../info/all.js'
-import { type CustomIo } from '../platform/customIo.js'
+import { type PluginIo } from '../platform/pluginIo.js'
 import {
   type BcoinCurrencyInfo,
   addNetwork,
@@ -57,14 +56,14 @@ export class CurrencyTools {
   currencyInfo: EdgeCurrencyInfo
   network: string
   pluginName: string
-  io: EdgeIo & CustomIo
+  io: PluginIo
   state: PluginState
 
   // ------------------------------------------------------------------------
   // Private API
   // ------------------------------------------------------------------------
   constructor (
-    io: EdgeIo & CustomIo,
+    io: PluginIo,
     { currencyInfo, engineInfo }: CurrencyPluginSettings
   ) {
     // Validate that we are a valid EdgeCurrencyTools:
@@ -130,14 +129,14 @@ export class CurrencyTools {
 
 const makeCurrencyPluginFactory = (
   { currencyInfo, engineInfo, bcoinInfo }: CurrencyPluginFactorySettings,
-  customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
+  makeIo: (opts: EdgeCorePluginOptions) => PluginIo
 ) => {
   addNetwork(bcoinInfo)
 
   return function makePlugin (
     options: EdgeCorePluginOptions
   ): EdgeCurrencyPlugin {
-    const io: CustomIo & EdgeIo = customizeIo(options.io)
+    const io = makeIo(options)
 
     // Extend bcoin to support this plugin currency info
     // and faster crypto if possible
@@ -175,12 +174,12 @@ const makeCurrencyPluginFactory = (
 }
 
 export function makeEdgeCorePlugins (
-  customizeIo: (io: EdgeIo) => CustomIo & EdgeIo
+  makeIo: (opts: EdgeCorePluginOptions) => PluginIo
 ): EdgeCorePlugins {
   const out: EdgeCorePlugins = {}
   for (const info of allInfo) {
     const pluginName = info.currencyInfo.pluginName
-    out[pluginName] = makeCurrencyPluginFactory(info, customizeIo)
+    out[pluginName] = makeCurrencyPluginFactory(info, makeIo)
   }
   return out
 }

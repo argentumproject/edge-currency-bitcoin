@@ -9,7 +9,6 @@ import type {
   EdgeDataDump,
   EdgeFreshAddress,
   EdgeGetTransactionsOptions,
-  EdgeIo,
   EdgePaymentProtocolInfo,
   EdgeSpendInfo,
   EdgeSpendTarget,
@@ -18,7 +17,7 @@ import type {
 } from 'edge-core-js'
 
 import { InfoServer } from '../info/constants'
-import { type CustomIo } from '../platform/customIo.js'
+import { type PluginIo } from '../platform/pluginIo.js'
 import { PluginState } from '../plugin/pluginState.js'
 import {
   toLegacyFormat,
@@ -84,7 +83,7 @@ export type CurrencyEngineSettings = {
   engineInfo: EngineCurrencyInfo,
   pluginState: PluginState,
   options: EdgeCurrencyEngineOptions,
-  io: EdgeIo & CustomIo
+  io: PluginIo
 }
 /**
  * The core currency plugin.
@@ -104,7 +103,7 @@ export class CurrencyEngine {
   callbacks: EdgeCurrencyEngineCallbacks
   walletLocalFolder: DiskletFolder
   walletLocalEncryptedFolder: DiskletFolder
-  io: EdgeIo & CustomIo
+  io: PluginIo
   feeUpdateInterval: number
   feeTimer: any
   fees: BitcoinFees
